@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supermarket Scanner</title>
+    <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        h1 {
+            text-align: center;
+            color: #3498db;
+            font-size: clamp(1.8em, 5vw, 2.5em);
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            animation: fadeIn 1s ease-in;
+        }
+
+        #scanner-container {
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease;
+        }
+
+        #scanner-container:hover {
+            transform: translateY(-5px);
+        }
+
+        #scanner-video {
+            width: 100%;
+            max-width: 700px;
+            border: 3px solid #3498db;
+            border-radius: 8px;
+            display: block;
+            margin: 20px auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 8px 4px;
+            border: none;
+            border-radius: 25px;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            font-size: clamp(0.9em, 2.5vw, 1em);
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            width: auto;
+            min-width: 100px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+        }
+
+        #stop-btn {
+            background-color: #e74c3c;
+        }
+
+        #stop-btn:hover {
+            background-color: #c0392b;
+        }
+
+        #checkout-btn {
+            background-color: #2ecc71;
+        }
+
+        #checkout-btn:hover {
+            background-color: #27ae60;
+        }
+
+        #clear-btn {
+            background-color: #f1c40f;
+            color: #2c3e50;
+        }
+
+        #clear-btn:hover {
+            background-color: #e67e22;
+        }
+
+        #status, #result {
+            margin: 15px 0;
+            padding: 12px;
+            border-radius: 8px;
+            background-color: #ecf0f1;
+            text-align: center;
+            font-weight: 500;
+            font-size: clamp(0.9em, 2.5vw, 1em);
+            transition: all 0.3s ease;
+        }
+
+        #status.success {
+            background-color: #d4efdf;
+            color: #27ae60;
+            border-left: 5px solid #27ae60;
+        }
+
+        #status.error {
+            background-color: #fad2d3;
+            color: #c0392b;
+            border-left: 5px solid #c0392b;
+        }
+
+        #cart {
+            margin-top: 25px;
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        #cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            font-size: clamp(0.85em, 2.2vw, 1em);
+        }
+
+        #cart-table th, #cart-table td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+
+        #cart-table th {
+            background: linear-gradient(to right, #3498db, #2980b9);
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #cart-table tr:hover {
+            background-color: #f8f9fa;
+            transition: background-color 0.2s;
+        }
+
+        #total {
+            font-size: clamp(1.2em, 3vw, 1.5em);
+            font-weight: 700;
+            text-align: right;
+            color: #2c3e50;
+            padding: 10px 0;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            #scanner-container {
+                padding: 15px;
+            }
+
+            #scanner-video {
+                max-width: 100%;
+                margin: 15px auto;
+            }
+
+            button {
+                padding: 8px 15px;
+                margin: 5px 2px;
+                min-width: 90px;
+            }
+
+            #cart-table th, #cart-table td {
+                padding: 8px;
+            }
+
+            #cart-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            #total {
+                text-align: center;
+            }
+
+            .button-group {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                margin-bottom: 15px;
+            }
+
+            #scanner-container {
+                padding: 10px;
+            }
+
+            button {
+                padding: 8px 12px;
+                min-width: 80px;
+            }
+
+            #status, #result {
+                padding: 10px;
+            }
+
+            #cart {
+                padding: 10px;
+            }
+
+            #cart-table th, #cart-table td {
+                padding: 6px;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Supermarket Scanner</h1>
+    <div id="scanner-container">
+        <div class="button-group">
+            <button id="start-btn">Start Scanner</button>
+            <button id="stop-btn" style="display: none;">Stop Scanner</button>
+        </div>
+        <div id="scanner-video"></div>
+        <div id="result">Ready to scan your items...</div>
+        <div id="status">Scanner initializing...</div>
+        <div id="cart">
+            <table id="cart-table">
+                <thead>
+                    <tr>
+                        <th>Barcode</th>
+                        <th>Product Name</th>
+                        <th>Price</th>
+                        <th>Qty</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody id="cart-body"></tbody>
+            </table>
+            <div id="total">Total: $0.00</div>
+            <div class="button-group">
+                <button id="checkout-btn">Checkout</button>
+                <button id="clear-btn">Clear Cart</button>
+            </div>
+        </div>
+    </div>
+    <script src="/static/scanner.js"></script>
+</body>
+</html>
